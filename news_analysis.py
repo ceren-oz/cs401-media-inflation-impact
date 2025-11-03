@@ -51,6 +51,7 @@ class NewsTextAnalyzer:
         # Store settings in this toolbox
         self.remove_stopwords = remove_stopwords
         self.min_word_length = min_word_length
+        self.language = language#yeni eklendi
 
         # If we want to remove stopwords, load the list
         if remove_stopwords:
