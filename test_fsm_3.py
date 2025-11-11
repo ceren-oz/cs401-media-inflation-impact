@@ -85,6 +85,17 @@ def is_proper_name_with_suffix(word):
                 return True
     return False
 
+def is_proper_name_without_suffix(word):
+    cleaned = clean_word_keep_apostrophe(word)
+
+    # Must be longer than 1 character and start uppercase
+    if len(cleaned) > 1 and cleaned[0].isupper():
+        # If its lowercase version appears in extracted proper names, treat as proper name
+        if cleaned.lower() in proper_names:
+            return True
+
+    return False
+
 
 def is_acronym(word):
     return word.isupper() and len(word) > 1
@@ -135,7 +146,12 @@ for channel_folder in os.listdir(base_path):
 
                 # FSM boşsa bile özel isim veya acronym ise affet
                 if fsmParseList.size() == 0:
-                    if is_proper_name_with_suffix(word) or is_acronym(words[i]):
+
+                    if (
+                            is_proper_name_with_suffix(word)
+                            or is_proper_name_without_suffix(words[i])
+                            or is_acronym(words[i])
+                    ):
                         continue
 
                     start = max(0, i - window_size)
@@ -158,5 +174,5 @@ sys.stdout = orig_stdout
 # CSV olarak kaydet
 # ------------------------
 df = pd.DataFrame(results)
-df.to_csv("yanlis_kelimeler_temiz-03.csv", index=False, encoding="utf-8-sig")
+df.to_csv("yanlis_kelimeler_temiz-04.csv", index=False, encoding="utf-8-sig")
 print(f"{len(results)} adet yanlış yazılmış kelime bulundu ve CSV'ye kaydedildi.")
