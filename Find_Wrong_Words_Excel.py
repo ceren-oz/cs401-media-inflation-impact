@@ -27,6 +27,9 @@ def turkish_capitalize(word: str) -> str:
     rest = rest.replace("I", "ı").replace("İ", "i").lower()
     return first + rest
 
+def is_acronym_with_suffix(word: str) -> bool:
+    return bool(re.match(r"^[A-ZÇĞİÖŞÜ]{2,}'[a-zçğıöşü]+$", word))
+
 
 # ========================================================
 # Skip rules
@@ -73,11 +76,24 @@ def fsm_normalize(word: str, fsm: FsmMorphologicalAnalyzer) -> str:
 # Custom dictionary
 # ========================================================
 def load_custom_dictionary(path: str) -> set:
+    dictionary = set()
     if not os.path.exists(path):
-        return set()
+        return dictionary
 
     with open(path, "r", encoding="utf-8") as f:
-        return {line.strip() for line in f if line.strip()}
+        for line in f:
+            entry = line.strip()
+            if not entry:
+                continue
+
+            dictionary.add(entry)
+
+            # 🔹 If multi-word name, also add last token
+            if " " in entry:
+                dictionary.add(entry.split()[-1])
+
+    return dictionary
+
 
 
 def is_in_custom_dict(word: str, custom_dict: set) -> bool:
@@ -121,6 +137,10 @@ def extract_incorrect_words(
     words = re.findall(r"[A-Za-zÇĞİÖŞÜçğıöşü']+", clean_text)
 
     for w in words:
+
+        if is_acronym_with_suffix(w):
+            continue
+
         if should_skip_word(w):
             continue
 
@@ -233,6 +253,6 @@ if __name__ == "__main__":
     process_all_channels(
         root_folder=r"C:\work\4th-Grade-Fall\CS401\DropboxBackUp\Ekonomi-Yapilanlar",
         custom_dict_path="custom_dictionary.txt",
-        output_excel="yanlis_kelimeler-02.xlsx",
+        output_excel="yanlis_kelimeler-03.xlsx",
         max_workers = 4
     )
