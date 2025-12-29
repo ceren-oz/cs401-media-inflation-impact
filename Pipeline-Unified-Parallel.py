@@ -14,7 +14,6 @@ from SentiNet.SentiLiteralNet import SentiLiteralNet
 # --- Vowel harmony for infinitives ---
 BACK_VOWELS = set("aıou")
 FRONT_VOWELS = set("eiöü")
-
 def pick_infinitive_suffix(root: str):
     for ch in reversed(root):
         if ch in BACK_VOWELS:
@@ -36,9 +35,6 @@ def init_globals():
 
 TARGET_TENSE_TAGS = {"PAST", "FUT", "PROG1", "NARR"}
 
-# -------------------------------------------------------------
-# Utilities
-# -------------------------------------------------------------
 def is_strong_verb(word, fsm: FsmMorphologicalAnalyzer):
     analysis = fsm.morphologicalAnalysis(word)
     if not analysis or analysis.size() == 0:
